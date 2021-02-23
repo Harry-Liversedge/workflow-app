@@ -24,11 +24,21 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn run format:check
       - run: yarn run test -- --coverage
+      - name: Upload Test Coverage
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage
+          path: coverage
         env: 
           CI: true
       - name: Build Project
         if: github.event_name == 'push'
         run: yarn run build
+      - name: Upload Build Folder
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: build
       - name: Deploy to Staging
         if: github.event_name == 'push'
         run: npx surge --project ./build --domain healthy-power.surge.sh
