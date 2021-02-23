@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - uses: actions/checkout@v2
+      - name: Cache node_modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: Use NodeJS
         uses: actions/setup-node@v1
         with:
@@ -21,7 +28,7 @@ jobs:
           CI: true
       - name: Build Project
         if: github.event_name == 'push'
-        run: npm run build
+        run: yarn run build
       - name: Deploy to Staging
         if: github.event_name == 'push'
         run: npx surge --project ./build --domain healthy-power.surge.sh
